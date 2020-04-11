@@ -29,6 +29,7 @@ android {
             manifestPlaceholders = [enableCrashReporting: "false"]
             ext.enableCrashlytics = false
             ext.alwaysUpdateBuildId = false
+            buildConfigField "String", "BASE_URL", "\"${ApiUrl}\""
             proguardFiles getDefaultProguardFile("${rootProject.ext.ProguardFile}"), "${rootProject.ext.Proguard}"
         }
 
@@ -37,6 +38,7 @@ android {
             debuggable false
             ext.enableCrashlytics = true
             manifestPlaceholders = [enableCrashReporting: "true"]
+            buildConfigField "String", "BASE_URL", "\"${ApiUrl}\""
             proguardFiles getDefaultProguardFile("${rootProject.ext.ProguardFile}"), "${rootProject.ext.Proguard}"
         }
 

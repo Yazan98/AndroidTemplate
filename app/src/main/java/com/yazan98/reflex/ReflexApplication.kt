@@ -25,11 +25,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@ApplicationScope
 class ReflexApplication @Inject constructor() : VortexApplication(), Thread.UncaughtExceptionHandler {
 
     companion object {
-        const val APP_DEBUG_STATUS = true
         const val SHARED_PREFS_NAME = "ReflexApp"
         const val SHARED_PREFS_SCOPE = Context.MODE_PRIVATE
         const val REFLEX_LOGGING_TAG = "Reflex App Log :: "
@@ -46,7 +44,7 @@ class ReflexApplication @Inject constructor() : VortexApplication(), Thread.Unca
         ReflexScope.launch {
             setupFresco()
             applyVortexLoggerConfiguration()
-            setupTimber(APP_DEBUG_STATUS)
+            setupTimber(BuildConfig.DEBUG)
             setupDeviceLocator()
             VortexConfiguration
                 .registerLeakCanaryConfiguration()

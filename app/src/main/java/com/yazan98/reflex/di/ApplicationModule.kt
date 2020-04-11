@@ -5,21 +5,22 @@ import android.content.Context
 import com.yazan98.domain.scopes.ApplicationScope
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
-@Module
-object ApplicationModule {
+@Module(
+    subcomponents = [
+    ]
+)
+class ApplicationModule {
 
     @Provides
-    @Singleton
     @ApplicationScope
     fun provideApplicationContext(application: Application): Context {
         return application
     }
 
     @Provides
-    @Singleton
-    fun provideContext(@ApplicationScope context: Context): Context {
+    @ApplicationScope
+    fun provideContext(context: Context): Context {
         return context
     }
 

@@ -1,5 +1,6 @@
 package com.yazan98.reflex.di
 
+import com.yazan98.data.ReflexNetworkModule
 import com.yazan98.reflex.ReflexApplication
 import dagger.BindsInstance
 import dagger.Component
@@ -7,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [
-    ApplicationModule::class
+    ApplicationModule::class, ReflexNetworkModule::class
 ])
 interface ApplicationComponent {
 
