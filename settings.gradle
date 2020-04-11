@@ -1,0 +1,6 @@
+rootProject.name='Reflex'
+include ':app'
+include ':data'
+include ':logic'
+include ':exposer'
+include ':domain'
