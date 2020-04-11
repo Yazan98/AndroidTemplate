@@ -1,36 +1,118 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: "${rootProject.ext.AndroidLibraryPlugin}"
+apply plugin: "${rootProject.ext.KotlinAndroidPlugin}"
+apply plugin: "${rootProject.ext.KotlinAndroidExPlugin}"
+apply plugin: "${rootProject.ext.KotlinKaptPlugin}"
+apply plugin: "${rootProject.ext.VortexPlugin}"
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
 
+    compileSdkVersion rootProject.ext.compileSdkV
+    buildToolsVersion "${rootProject.ext.BuildToolsVersion}"
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'consumer-rules.pro'
+        minSdkVersion rootProject.ext.minSdkV
+        targetSdkVersion rootProject.ext.compileSdkV
+        renderscriptTargetApi rootProject.ext.renderscriptTargetApi
+        renderscriptSupportModeEnabled rootProject.ext.renderscriptSupportModeEnabled
+        multiDexEnabled rootProject.ext.MultiDexMergeEnabled
+        versionCode rootProject.ext.VersionCode
+        versionName "${rootProject.ext.ApplicationVersion}"
+        buildConfigField "String", "BASE_URL", "\"${ApiUrl}\""
+        testInstrumentationRunner "${rootProject.ext.AndroidTest}"
+        resConfigs "en", "ar"
     }
 
     buildTypes {
-        release {
+
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
+            manifestPlaceholders = [enableCrashReporting: "false"]
+            ext.enableCrashlytics = false
+            ext.alwaysUpdateBuildId = false
+            proguardFiles getDefaultProguardFile("${rootProject.ext.ProguardFile}"), "${rootProject.ext.Proguard}"
         }
+
+        release {
+            minifyEnabled true
+            debuggable false
+            ext.enableCrashlytics = true
+            manifestPlaceholders = [enableCrashReporting: "true"]
+            proguardFiles getDefaultProguardFile("${rootProject.ext.ProguardFile}"), "${rootProject.ext.Proguard}"
+        }
+
     }
 
 }
 
-dependencies {
+dependencies { configuration ->
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.2.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    rxJavaConfiguration(configuration)
+    includeModules(configuration)
+    retrofitConfiguration(configuration)
+    vortexConfiguration(configuration)
+    lifeCycleConfiguration(configuration)
+    databaseConfiguration(configuration)
+    RxJavaConfiguration(configuration)
+    defaultTestingConfiguration(configuration)
+    daggerConfig(configuration)
+}
+
+private void rxJavaConfiguration(configuration) {
+    def RxConfiguration = rootProject.ext.RxConfiguration
+    configuration.implementation RxConfiguration.RxJava
+    configuration.implementation RxConfiguration.RxAndroid
+}
+
+private void retrofitConfiguration(configuration) {
+    def DataConfiguration = rootProject.ext.DataConfiguration
+    configuration.implementation DataConfiguration.Retrofit
+    configuration.implementation DataConfiguration.RetrofitRxJavaAdapter
+    configuration.implementation DataConfiguration.RetrofitIntercenptor
+    configuration.implementation DataConfiguration.retrofitGsonConverter
+}
+
+private void vortexConfiguration(configuration) {
+    def VortexConfiguration = rootProject.ext.VortexConfiguration
+    configuration.implementation VortexConfiguration.VortexCore
+    configuration.implementation VortexConfiguration.VortexData
+    configuration.implementation VortexConfiguration.VortexPrefs
+}
+
+private void includeModules(configuration) {
+    def ApplicationModules = rootProject.ext.ApplicationModules
+    configuration.api project("${ApplicationModules.Domain}")
+    configuration.api project("${ApplicationModules.Exposer}")
+}
+
+private void RxJavaConfiguration(configuration) {
+    def RxConfiguration = rootProject.ext.RxConfiguration
+    configuration.implementation RxConfiguration.RxJava
+    configuration.implementation RxConfiguration.RxAndroid
+}
+
+private void daggerConfig(configuration) {
+    def DependenciesInjection = rootProject.ext.DependenciesInjection
+    configuration.kapt DependenciesInjection.MotifCompiler
+    configuration.implementation DependenciesInjection.Motif
+    configuration.implementation DependenciesInjection.Dagger
+    configuration.kapt DependenciesInjection.DaggerCompiler
+    configuration.implementation DependenciesInjection.DaggerAndroid
+    configuration.implementation DependenciesInjection.DaggerAndroidSupport
+    configuration.kapt DependenciesInjection.DaggerAndroidProcessor
+}
+
+private void defaultTestingConfiguration(configuration) {
+    def TestingConfiguration = rootProject.ext.TestingConfiguration
+    configuration.testImplementation TestingConfiguration.Junit
+    configuration.androidTestImplementation TestingConfiguration.Esspresso
+    configuration.androidTestImplementation TestingConfiguration.Runner
+}
+
+private void lifeCycleConfiguration(configuration) {
+    def LifeCycleConfiguration = rootProject.ext.LifeCycleConfiguration
+    configuration.implementation LifeCycleConfiguration.LifecycleViewModel
+    configuration.implementation LifeCycleConfiguration.LifecycleExtensions
+    configuration.implementation LifeCycleConfiguration.LifecycleRuntime
+    configuration.implementation LifeCycleConfiguration.LifecycleLiveData
+    configuration.implementation LifeCycleConfiguration.LifecycleCommon
 }
